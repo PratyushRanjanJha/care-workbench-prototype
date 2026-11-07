@@ -1,57 +1,65 @@
-# Care Workbench: clickable prototype (HiLabs APM case 2026–27)
+# Care Workbench: a clickable prototype
 
-A working front-end prototype of the case-management workbench from the deck. It runs entirely in the browser with no backend and no build step, using synthetic data for five fictional patients. "Today" is Monday 9 Nov 2026, 8:00 am.
+### ▶ [Open the Care Workbench](https://pratyushranjanjha.github.io/care-workbench-prototype/)
 
-## What you can do in it
+This prototype accompanies the HiLabs APM product case 2026–27, *Reimagining the Case Management Workbench*. All data is synthetic.
 
-| Tab | Try this |
-| --- | --- |
-| **My day** | Drag the weight sliders or switch **Hard rules** off and watch the queue re-order (Jasmine drops below Marcus). Open **Why #n?** to see drivers with sources; override or snooze with a reason. |
-| **Member 360** | Walter: resolve the furosemide and lisinopril/Entresto conflicts, then accept next best actions. Rosa: review the duplicate record and **merge** it, which surfaces a hidden fall and a new drug, then pick the case owner. Jasmine: **verify status** (outreach is held until you do) and route the restricted record to an LCSW. |
-| **Outreach & note** | Log call outcomes (wrong person or not in service retires a number). On a connected call, confirm pre-filled facts, reconcile meds and tick questions; the note drafts itself. **Sign** fills 4 records and creates tasks, and the conversations counter goes up. Try **Crisis on call**. |
-| **Bad days** | 16 edge cases. **Simulate** a late pharmacy feed (its rules pause) or a member's death (removed from the queue, outreach blocked). |
-| **Audit log** | Every override, AI action, conflict choice and signature, with counts. |
+---
 
-## Files
+## The problem it solves
 
-```
-index.html   page shell and navigation
-styles.css   styling
-data.js      synthetic patients (edit here to change scenarios)
-app.js       ranking, screens and interactions (vanilla JS)
-.nojekyll    tells GitHub Pages to serve files as-is
-```
+Maria is a telephonic nurse case manager at a health plan, with 20 years of ICU experience. She spends only about **13% of her day talking to members**. The rest goes to:
 
-## Run locally
+- hunting across 6–7 screens to prepare each call
+- dialling numbers that are dead or wrong
+- typing the same facts into several forms
+- working out who to call next
 
-Open `index.html` in a browser, or serve the folder:
+She manages about 48 complex members. Every hospital discharge starts a **2-business-day deadline** to reach the patient.
 
-```bash
-python3 -m http.server 8000   # then open http://localhost:8000
-```
+The workbench joins data the plan already has, ranks her day by deadline and danger, and prepares every call. **AI prepares; the nurse decides.** It never diagnoses, changes medication, closes a case or writes to the record without her signature. The goal is to take her from **2 to about 5 member conversations a day**.
 
-## Host on GitHub Pages (free, about 2 minutes)
+## The three screens
 
-1. Create a new **public** repository on GitHub, e.g. `care-workbench-prototype`.
-2. Upload these files to the repository root using **Add file → Upload files** (or `git push`).
-3. Go to **Settings → Pages**. Under *Build and deployment*, set **Source: Deploy from a branch**, **Branch: `main`**, folder **`/ (root)`**, then **Save**.
-4. After about a minute, the site is live at `https://<your-username>.github.io/care-workbench-prototype/`.
+| Screen | Question it answers | What you can do |
+| --- | --- | --- |
+| **My day** | Who needs me, why today, and when can I reach them? | See a ranked queue with reasons. Move the weight sliders or switch hard rules off and watch the order change. Open **Why #n?** for the drivers and their sources. Override or snooze with a reason. |
+| **Member 360** | What’s going on with this person? | One screen instead of six: best contact, an AI summary with a source on every sentence, the medicine list compared across sources, a timeline, and the conflicts that need a clinician’s judgment. |
+| **Outreach & note** | How do I reach them, and document it once? | Ranked phone numbers with outcome buttons, a pre-filled call guide to confirm, structured medication reconciliation, and a note that drafts itself. Signing fills 4 records and creates the follow-up tasks. |
 
-With git:
+Two extra tabs, **Bad days** (16 edge cases, two of them live) and **Audit log** (every action, as an auditor would see it), show how the product behaves when things go wrong.
 
-```bash
-git init && git add . && git commit -m "Care Workbench prototype"
-git branch -M main
-git remote add origin https://github.com/<your-username>/care-workbench-prototype.git
-git push -u origin main
-```
+## How the queue is ranked
 
-## Other hosts (optional)
+1. **Hard rules first.** A stop signal (member died, disenrolled or opted out) removes the member. A 2-business-day discharge deadline or a safety concern pins them to the top. A clinical red flag goes to the urgent tier. A late data feed pauses the rules that depend on it.
+2. **Then an open formula:** Priority = 0.35 × Urgency + 0.30 × Deadline + 0.25 × Modifiable risk + 0.10 × Reachable.
+3. **Reachability sets the time slot, not the priority**, so hard-to-reach members don’t sink. The plan’s own risk score only breaks ties.
 
-- **Netlify / Vercel:** import the GitHub repo. There is no build command, and the publish directory is the root. You get a URL in under a minute.
-- **Streamlit:** not recommended here. Streamlit is built for Python data apps, and its widgets can't reproduce a clinical workbench UI with this level of interaction. If you need it on Streamlit Community Cloud, embed this page with `st.components.v1.html(open("index.html").read(), height=1400)`. You would first have to inline `styles.css`, `data.js` and `app.js` into `index.html`, because the embed does not load separate files.
+## The five synthetic patients (Monday 9 Nov 2026, 8 am)
 
-## Notes
+| Rank | Patient | Situation | What the prototype shows |
+| --- | --- | --- | --- |
+| 1 | **Walter Sample**, 71, Medicare Advantage | Heart-failure discharge on Friday; 3 new medicines not picked up; an old blood-pressure drug (lisinopril) still active alongside a new one (Entresto) that it must not overlap with | Deadline pinning, medicine conflicts, a dead home line, one-entry documentation |
+| 2 | **Jasmine Dummy**, 29, Medicaid | Behavioural-health admission with no discharge message for 6 days; housing record out of date | Safety pin, outreach held until her status is verified, a restricted record routed to a licensed clinical social worker |
+| 3 | **Marcus Placeholder**, 38, Medicaid | 4 asthma ED visits in 90 days (only 2 in claims yet); the phone number on file reaches his ex-partner | Real-time hospital alerts vs slow claims, retiring a wrong number, a working number found in another plan system |
+| 4 | **Rosa Testcase**, 82, dual-eligible (Medicare + Medicaid), Spanish-speaking | Dementia; daughter is her caregiver; her history is split across two member IDs | Duplicate-record merge that reveals a hidden fall and a new drug; caregiver consent; interpreter booking |
+| 5 | **Denise Fakename**, 54, Medicaid | Diabetes worsening; no plan-paid metformin refill for 75 days; kidney disease missing from her problem list | Not labelling her “non-adherent” from missing data alone; catching an impossible lab value |
 
-- All people, phone numbers (555-01xx) and facilities are fictional. No real PHI.
-- State resets on reload; use **About → Reset demo** to start over.
+## About the data
+
+- **Fictional.** Every person, phone number (555-01xx) and facility is made up. There is no real patient data.
+- **Realistic sources.** The data mirrors what a health plan actually holds:
+  - hospital admission and discharge alerts
+  - utilisation-management reviews and authorisations
+  - discharge summaries
+  - pharmacy fills
+  - claims and labs
+  - contact history
+  - consent records
+  - case notes
+  - risk scores
+  - social-needs screens
+- **Built-in mess.** It contains the kinds of errors real data has: late claims, conflicting medicine lists, missing units, duplicate IDs, stale screens and wrong phone numbers. Each one is something the product has to catch.
+- **Every fact shows its source.** Facts are marked fresh, ageing or stale, and stale data is shown but cannot trigger an action.
+
+Everything runs in your browser, and nothing is saved or sent anywhere. Reload the page (or use **About → Reset demo**) to start over.
