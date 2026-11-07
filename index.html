@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Care Workbench prototype · HiLabs APM case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div><b>Care Workbench</b><div class="sub">powered by HiLabs data · Maria Alvarez, RN · <span id="today"></span></div></div>
+  <nav id="nav">
+    <button data-v="queue" class="on">My day</button>
+    <button data-v="m360">Member 360</button>
+    <button data-v="outreach">Outreach &amp; note</button>
+    <button data-v="edge">Bad days</button>
+    <button data-v="audit">Audit log</button>
+    <button data-v="about">About</button>
+  </nav>
+</header>
+<div class="banner">Prototype for the HiLabs APM case 2026–27. All people, phone numbers and facilities are fictional. “Today” is Monday 9 Nov 2026, 8:00 am.</div>
+<main id="app"></main>
+<div id="toast" class="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
